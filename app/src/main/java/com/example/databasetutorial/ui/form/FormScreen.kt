@@ -28,19 +28,21 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.databasetutorial.data.repository.StudentRepository
+import com.example.databasetutorial.ui.StudentViewModel
 import com.example.databasetutorial.ui.theme.DatabaseTutorialTheme
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FormScreen(
-    repository: StudentRepository,
+    viewModel: StudentViewModel,
     onBack: () -> Unit = {},
 ) {
-    var name by remember { mutableStateOf("") }
-    var marks by remember { mutableStateOf("") }
-    val scope = rememberCoroutineScope() // ne presize atu bele call funciotn suspend sira ida insertStuent iha Dao nian ne'e
+
+    val name = viewModel.name
+    val marks = viewModel.marks
 
     Scaffold(
         topBar = {
@@ -65,7 +67,7 @@ fun FormScreen(
         ) {
             OutlinedTextField(
                 value = name,
-                onValueChange = { name = it },
+                onValueChange = { viewModel.onNameChange(it) },
                 label = { Text("Name") },
                 modifier = Modifier.fillMaxWidth()
             )
@@ -74,7 +76,7 @@ fun FormScreen(
 
             OutlinedTextField(
                 value = marks,
-                onValueChange = { marks = it },
+                onValueChange = { viewModel.onMarksChange(it) },
                 label = { Text("Marks") },
                 modifier = Modifier.fillMaxWidth(),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
@@ -84,10 +86,8 @@ fun FormScreen(
 
             Button(
                 onClick = {
-                    scope.launch {
-                        repository.insertStudent(name, marks.toInt())
-                        onBack()
-                    }
+                    viewModel.insertStudent()
+                    onBack()
                 },
                 modifier = Modifier.fillMaxWidth()
             ) {

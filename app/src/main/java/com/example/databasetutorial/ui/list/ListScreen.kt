@@ -24,6 +24,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.databasetutorial.data.repository.StudentRepository
+import com.example.databasetutorial.ui.StudentViewModel
+import com.example.databasetutorial.ui.StudentViewModelFactory
 import com.example.databasetutorial.ui.theme.DatabaseTutorialTheme
 
 data class Student(val name: String, val marks: Int)
@@ -31,11 +33,11 @@ data class Student(val name: String, val marks: Int)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ListScreen(
-    repository: StudentRepository,
+    viewModel: StudentViewModel,
     modifier: Modifier = Modifier,
     onAddStudent: () -> Unit = {}
 ) {
-    val students by repository.getAllStudents().collectAsStateWithLifecycle(initialValue = emptyList())
+    val students by viewModel.students.collectAsStateWithLifecycle()
     Scaffold(
         modifier = modifier.fillMaxSize(),
         topBar = {
