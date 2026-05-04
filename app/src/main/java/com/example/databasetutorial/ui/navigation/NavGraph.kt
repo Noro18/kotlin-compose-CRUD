@@ -1,12 +1,9 @@
 package com.example.databasetutorial.ui.navigation
 
-import android.util.Log.v
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.internal.composableLambda
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.databasetutorial.data.repository.StudentRepository
 import com.example.databasetutorial.ui.StudentViewModel
 import com.example.databasetutorial.ui.form.FormScreen
 import com.example.databasetutorial.ui.list.ListScreen
@@ -28,6 +25,11 @@ fun AppNavHost(viewModel: StudentViewModel) {
             ListScreen(
                 viewModel = viewModel,
                 onAddStudent = {
+                    viewModel.clearEditing()
+                    navController.navigate(Routes.FORM)
+                },
+                onEditStudent = { student ->
+                    viewModel.startEditing(student)
                     navController.navigate(Routes.FORM)
                 }
             )
@@ -37,8 +39,10 @@ fun AppNavHost(viewModel: StudentViewModel) {
             FormScreen(
                 viewModel = viewModel,
                 onBack = {
+                    viewModel.clearEditing() // hamos tia lai
                     navController.popBackStack()
-                }
+                },
+
             )
         }
     }
