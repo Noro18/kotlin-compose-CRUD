@@ -1,5 +1,6 @@
 package com.example.databasetutorial.ui
 
+import android.R.attr.name
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -20,6 +21,10 @@ class StudentViewModel(private val repository: StudentRepository): ViewModel() {
     var marks by mutableStateOf("")
         private set
 
+
+
+    var errorMessage by mutableStateOf<String?>(null)
+
     val students: StateFlow<List<StudentEntity>> = repository
         .getAllStudents()
         .stateIn(
@@ -33,10 +38,26 @@ class StudentViewModel(private val repository: StudentRepository): ViewModel() {
     fun onMarksChange(value: String) { marks = value }
 
     fun insertStudent() {
+        val parsedMarks = marks.toIntOrNull()
+
+        if (name.isBlank() && parsedMarks == null) {
+            errorMessage = "Name & Marks cannot be empty"
+            return
+        }
+        if (name.isBlank()) { errorMessage = "Name cannot be empty"; return }
+        if (parsedMarks == null) { errorMessage = "Marks must be a number"; return }
+        errorMessage = null
+
         viewModelScope.launch {
-            repository.insertStudent(name, marks.toInt())
+            repository.insertStudent(name, parsedMarks)
             name = ""
             marks = ""
+        }
+    }
+
+    fun deleteStudent(student: StudentEntity) {
+        viewModelScope.launch {
+            repository.deleteStudent(student)
         }
     }
 }
