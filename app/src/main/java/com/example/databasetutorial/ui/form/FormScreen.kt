@@ -45,7 +45,10 @@ fun FormScreen(
     onBack: () -> Unit = {},
 ) {
     val context = LocalContext.current
+    val isEditing = viewModel.editingStudent != null
 
+    // check if currently is editin ot not
+    var editingStudent = viewModel.editingStudent != null // check apakah startEdiint() call ga ale antes mai iha ne'e
     val name = viewModel.name
     val marks = viewModel.marks
 
@@ -91,15 +94,22 @@ fun FormScreen(
 
             Button(
                 onClick = {
-                    viewModel.insertStudent()
-                    Toast.makeText(context, "Student added!", Toast.LENGTH_SHORT).show()
+
+                    if (editingStudent) { viewModel.updateStudent() }  // updateStudnet mamuk tanba nia data rai iah viewModel
+                    else viewModel.insertStudent()
+
                     if (viewModel.errorMessage == null) {
+                        Toast.makeText(context,
+                            if (editingStudent) "Student updated!" else "Student added!",
+                            Toast.LENGTH_SHORT).show()
                         onBack()
                     }
+
+
                 },
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text("Submit")
+                Text(if (isEditing) "Update" else "Submit")
             }
             if (viewModel.errorMessage != null) {
                 Text(text = viewModel.errorMessage!!, color = MaterialTheme.colorScheme.error)
