@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
+import androidx.room.Update
 import com.example.databasetutorial.data.local.entities.StudentEntity
 import com.example.databasetutorial.ui.list.Student
 import kotlinx.coroutines.flow.Flow
@@ -18,4 +19,7 @@ interface StudentDao {
 
     @Delete
     suspend fun deleteStudent(student: StudentEntity)
+
+    @Update
+    suspend fun updateStudent(student: StudentEntity)
 }
