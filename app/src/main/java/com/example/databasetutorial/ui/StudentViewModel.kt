@@ -21,8 +21,8 @@ class StudentViewModel(private val repository: StudentRepository): ViewModel() {
     var marks by mutableStateOf("")
         private set
 
-
-
+    var editingStudent by mutableStateOf<StudentEntity?>(null) // keep track agora ne edit student or not, sutnatically nia default valud ne null no bele simu nulll ou object studentEntity
+        private set
     var errorMessage by mutableStateOf<String?>(null)
 
     val students: StateFlow<List<StudentEntity>> = repository
@@ -37,6 +37,20 @@ class StudentViewModel(private val repository: StudentRepository): ViewModel() {
     fun onNameChange(value: String) { name = value }
     fun onMarksChange(value: String) { marks = value }
 
+
+    // Clearn ga Start Editing() {
+
+    fun startEditing(student: StudentEntity) {
+        editingStudent = student
+        name = student.name
+        marks = student.marks.toString()
+    }
+    fun clearEditing() {
+        name = ""
+        marks = ""
+        errorMessage = null
+        editingStudent = null
+    }
     fun insertStudent() {
         val parsedMarks = marks.toIntOrNull()
 
@@ -50,14 +64,32 @@ class StudentViewModel(private val repository: StudentRepository): ViewModel() {
 
         viewModelScope.launch {
             repository.insertStudent(name, parsedMarks)
-            name = ""
-            marks = ""
+            clearEditing()
         }
     }
 
     fun deleteStudent(student: StudentEntity) {
         viewModelScope.launch {
             repository.deleteStudent(student)
+        }
+    }
+
+    fun updateStudent() {
+        val parsedMarks = marks.toIntOrNull()
+
+        if (name.isBlank() && parsedMarks == null) {
+            errorMessage = "Name & Marks cannot be empty"
+            return
+        }
+        if (name.isBlank()) { errorMessage = "Name cannot be empty"; return }
+        if (parsedMarks == null) { errorMessage = "Marks must be a number"; return }
+        errorMessage = null
+
+        viewModelScope.launch {
+            editingStudent?.let { // safe call if its not empty then studnetEntity = it
+                repository.updateStudent(it.copy(name = name, marks = parsedMarks))
+            }
+            clearEditing()
         }
     }
 }

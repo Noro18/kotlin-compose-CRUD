@@ -2,7 +2,6 @@ package com.example.databasetutorial.ui.list
 
 import android.widget.Toast
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -33,13 +32,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.example.databasetutorial.data.repository.StudentRepository
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.databasetutorial.data.local.entities.StudentEntity
 import com.example.databasetutorial.ui.StudentViewModel
-import com.example.databasetutorial.ui.StudentViewModelFactory
-import com.example.databasetutorial.ui.theme.DatabaseTutorialTheme
 
 data class Student(val name: String, val marks: Int)
 
@@ -48,7 +45,8 @@ data class Student(val name: String, val marks: Int)
 fun ListScreen(
     viewModel: StudentViewModel,
     modifier: Modifier = Modifier,
-    onAddStudent: () -> Unit = {}
+    onAddStudent: () -> Unit = {},
+    onEditStudent: (StudentEntity) -> Unit = {}
 ) {1
 
     val context = LocalContext.current
@@ -117,7 +115,11 @@ fun ListScreen(
                                     DropdownMenuItem(
                                         text = { Text("Edit") },
                                         leadingIcon = { Icon(Icons.Default.Edit, contentDescription = null) },
-                                        onClick = { expanded = false }
+                                        onClick = {
+                                            onEditStudent(student) // ida ne'e valor student sei pasa sai lamda iha NavHost nian
+                                            expanded = false
+
+                                        }
                                     )
                                 }
                             }
